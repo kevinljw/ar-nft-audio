@@ -1,0 +1,159 @@
+<script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@1.6.0/dist/aframe-master.min.js"></script>
+<script src="aframe-ar-nft.js"></script>
+
+<script>
+    window.onload = function() {
+        // 播放按鈕點擊處理，開啟全域互動權限
+        document.querySelector("#playButton").addEventListener('click', () => {
+            document.querySelector("#playButton").style.display = 'none';
+            const audios = document.querySelectorAll('audio');
+            audios.forEach(audio => {
+                audio.play(); // 嘗試播放以取得使用者互動權限
+                audio.pause(); // 立即暫停，避免實際播放音效
+                audio.currentTime = 0;
+            });
+        });
+
+        // 註冊通用的 audiohandler 組件
+        AFRAME.registerComponent('audiohandler', {
+            schema: {
+                audioId: {type: 'string'}
+            },
+
+            init: function () {
+                const marker = this.el;
+                this.audio = document.querySelector(`#${this.data.audioId}`);
+                this.image = this.el.querySelector('.marker-image');
+
+                // 處理 marker 被找到時的事件
+                marker.addEventListener('markerFound', () => {
+                    this.image.setAttribute('visible', 'true');
+                    this.playAudio();
+                });
+
+                // 處理 marker 被丟失時的事件
+                marker.addEventListener('markerLost', () => {
+                    this.image.setAttribute('visible', 'false');
+                    this.stopAudio();
+                });
+            },
+
+            playAudio: function () {
+                if (this.audio) {
+                    this.audio.play();
+                }
+            },
+
+            stopAudio: function () {
+                if (this.audio) {
+                    this.audio.pause();
+                    this.audio.currentTime = 0;
+                }
+            }
+        });
+    };
+</script>
+
+<style>
+    .arjs-loader {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .arjs-loader div {
+        text-align: center;
+        font-size: 1.25em;
+        color: white;
+    }
+
+    #playButton {
+        position: fixed;
+        bottom: 120px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 9999;
+        padding: 22px 36px;
+        background-color: #cd6133;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 18px;
+        cursor: pointer;
+    }
+
+    #playButton:hover {
+        background-color: #cc8e35;
+    }
+</style>
+
+<body style="margin: 0px; overflow: hidden;">
+    <div class="arjs-loader">
+        <div>載入中，請稍候...</div>
+    </div>
+    
+    <button id="playButton">點擊啟用音效</button>
+
+    <a-scene
+        vr-mode-ui="enabled: false;"
+        renderer="antialias: true; alpha: true; precision: medium;"
+        embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
+
+        <a-assets>
+            <!-- 定義音效資源 -->
+            <audio src="sound/saying.mp3" preload="auto" id="audio1" loop crossorigin></audio>
+            <audio src="sound/ai_sound_years_new.mp3" preload="auto" id="audio2" loop crossorigin></audio>
+            <!-- 使用單一共用圖示 -->
+            <img id="shared-icon" src="icon/microphone.png">
+        </a-assets>
+
+        <!-- 第一個 marker -->
+        <a-nft
+            audiohandler="audioId: audio1"
+            type="nft"
+            url="data/dataNFT/korean_bird"
+            smooth="true"
+            smoothCount="5"
+            smoothTolerance="0.01"
+            smoothThreshold="50">
+            <a-image 
+                class="marker-image"
+                src="#shared-icon"
+                position="80 0 0"
+                height="50"
+                width="50"
+                rotation="-90 0 0"
+                visible="false">
+            </a-image>
+        </a-nft>
+
+        <!-- 第二個 marker -->
+        <a-nft
+            audiohandler="audioId: audio2"
+            type="nft"
+            url="data/dataNFT/korean_temple"
+            smooth="true"
+            smoothCount="5"
+            smoothTolerance="0.01"
+            smoothThreshold="20">
+            <a-image 
+                class="marker-image"
+                src="#shared-icon"
+                position="100 0 0"
+                height="50"
+                width="50"
+                rotation="-90 0 0"
+                visible="false">
+            </a-image>
+        </a-nft>
+
+        <a-entity camera></a-entity>
+    </a-scene>
+</body>
