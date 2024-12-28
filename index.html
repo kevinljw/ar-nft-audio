@@ -3,18 +3,16 @@
 
 <script>
     window.onload = function() {
-        // 播放按鈕點擊處理，開啟全域互動權限
         document.querySelector("#playButton").addEventListener('click', () => {
             document.querySelector("#playButton").style.display = 'none';
             const audios = document.querySelectorAll('audio');
             audios.forEach(audio => {
-                audio.play(); // 嘗試播放以取得使用者互動權限
-                audio.pause(); // 立即暫停，避免實際播放音效
+                audio.play();
+                audio.pause();
                 audio.currentTime = 0;
             });
         });
 
-        // 註冊通用的 audiohandler 組件
         AFRAME.registerComponent('audiohandler', {
             schema: {
                 audioId: {type: 'string'}
@@ -23,17 +21,15 @@
             init: function () {
                 const marker = this.el;
                 this.audio = document.querySelector(`#${this.data.audioId}`);
-                this.image = this.el.querySelector('.marker-image');
+                this.icon = document.querySelector("#shared-icon-display");
 
-                // 處理 marker 被找到時的事件
                 marker.addEventListener('markerFound', () => {
-                    this.image.setAttribute('visible', 'true');
+                    this.icon.style.visibility = 'visible';
                     this.playAudio();
                 });
 
-                // 處理 marker 被丟失時的事件
                 marker.addEventListener('markerLost', () => {
-                    this.image.setAttribute('visible', 'false');
+                    this.icon.style.visibility = 'hidden';
                     this.stopAudio();
                 });
             },
@@ -76,11 +72,11 @@
 
     #playButton {
         position: fixed;
-        bottom: 120px;
+        bottom: 70px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 9999;
-        padding: 22px 36px;
+        padding: 20px 32px;
         background-color: #cd6133;
         color: white;
         border: none;
@@ -92,14 +88,41 @@
     #playButton:hover {
         background-color: #cc8e35;
     }
+
+    #shared-icon-display {
+        position: absolute;
+        bottom: 40px;
+        left: 50%;
+        transform: translateX(-50%);
+        visibility: hidden;
+        width: 60px;
+        height: 60px;
+        z-index: 9999;
+    }
 </style>
 
-<body style="margin: 0px; overflow: hidden;">
+<body style="margin: 0px; overflow: hidden; touch-action: none;">
     <div class="arjs-loader">
         <div>載入中，請稍候...</div>
     </div>
-    
+
     <button id="playButton">點擊啟用音效</button>
+
+    <!-- 視覺框架 -->
+    <svg width="100%" height="100%" style="position: fixed; top: 0; left: 0; z-index: 1000; pointer-events: none;">
+        <defs>
+            <mask id="circle-mask">
+                <rect width="100%" height="100%" fill="white" />
+                <circle cx="50%" cy="50%" r="150" fill="black" />
+            </mask>
+        </defs>
+        <rect width="100%" height="100%" fill="rgba(252, 252, 252, 0.4)" mask="url(#circle-mask)" />
+        <circle cx="50%" cy="50%" r="150" stroke="rgba(252, 252, 252, 0.6)" stroke-width="5" fill="none" />
+    </svg>
+
+    <div id="visual-frame">
+        <img id="shared-icon-display" src="icon/audio-waves.png">
+    </div>
 
     <a-scene
         vr-mode-ui="enabled: false;"
@@ -107,14 +130,10 @@
         embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
 
         <a-assets>
-            <!-- 定義音效資源 -->
             <audio src="sound/saying.mp3" preload="auto" id="audio1" loop crossorigin></audio>
             <audio src="sound/ai_sound_years_new.mp3" preload="auto" id="audio2" loop crossorigin></audio>
-            <!-- 使用單一共用圖示 -->
-            <img id="shared-icon" src="icon/microphone.png">
         </a-assets>
 
-        <!-- 第一個 marker -->
         <a-nft
             audiohandler="audioId: audio1"
             type="nft"
@@ -123,18 +142,8 @@
             smoothCount="5"
             smoothTolerance="0.01"
             smoothThreshold="50">
-            <a-image 
-                class="marker-image"
-                src="#shared-icon"
-                position="80 0 0"
-                height="50"
-                width="50"
-                rotation="-90 0 0"
-                visible="false">
-            </a-image>
         </a-nft>
 
-        <!-- 第二個 marker -->
         <a-nft
             audiohandler="audioId: audio2"
             type="nft"
@@ -143,15 +152,6 @@
             smoothCount="5"
             smoothTolerance="0.01"
             smoothThreshold="20">
-            <a-image 
-                class="marker-image"
-                src="#shared-icon"
-                position="100 0 0"
-                height="50"
-                width="50"
-                rotation="-90 0 0"
-                visible="false">
-            </a-image>
         </a-nft>
 
         <a-entity camera></a-entity>
