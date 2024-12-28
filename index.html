@@ -3,15 +3,28 @@
 
 <script>
     window.onload = function() {
-        document.querySelector("#playButton").addEventListener('click', () => {
-            document.querySelector("#playButton").style.display = 'none';
+        const playButton = document.querySelector("#playButton");
+        const hintMessage = document.querySelector("#hintMessage");
+        let userInteractionGranted = false;
+
+        hintMessage.textContent = "請先點擊下方按鈕";
+        hintMessage.style.display = 'block';
+
+        playButton.addEventListener('click', () => {
+            playButton.style.display = 'none';
+            grantAudioPermissions();
+            userInteractionGranted = true;
+            hintMessage.textContent = "請再次對準作品";
+        });
+
+        function grantAudioPermissions() {
             const audios = document.querySelectorAll('audio');
             audios.forEach(audio => {
                 audio.play();
                 audio.pause();
                 audio.currentTime = 0;
             });
-        });
+        }
 
         AFRAME.registerComponent('audiohandler', {
             schema: {
@@ -24,13 +37,27 @@
                 this.icon = document.querySelector("#shared-icon-display");
 
                 marker.addEventListener('markerFound', () => {
-                    this.icon.style.visibility = 'visible';
-                    this.playAudio();
+                    if (userInteractionGranted) {
+                        hintMessage.style.display = 'none';
+                        this.icon.style.visibility = 'visible';
+                        this.playAudio();
+                    } else {
+                        hintMessage.style.display = 'block';
+                        setTimeout(() => {
+                            hintMessage.style.display = 'none';
+                        }, 4500);
+                    }
                 });
 
                 marker.addEventListener('markerLost', () => {
-                    this.icon.style.visibility = 'hidden';
-                    this.stopAudio();
+                    if (userInteractionGranted) {
+                        this.icon.style.visibility = 'hidden';
+                        this.stopAudio();
+                        setTimeout(() => {
+                            hintMessage.textContent = "請對準作品";
+                            hintMessage.style.display = 'block';
+                        }, 2500);
+                    }
                 });
             },
 
@@ -70,6 +97,21 @@
         color: white;
     }
 
+    #hintMessage {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 18px;
+        z-index: 9999;
+        display: none;
+    }
+
+
     #playButton {
         position: fixed;
         bottom: 70px;
@@ -107,6 +149,7 @@
     </div>
 
     <button id="playButton">點擊啟用音效</button>
+    <div id="hintMessage">請先點擊啟用音效<br>並再次掃描</div>
 
     <!-- 視覺框架 -->
     <svg width="100%" height="100%" style="position: fixed; top: 0; left: 0; z-index: 1000; pointer-events: none;">
@@ -126,7 +169,7 @@
 
     <a-scene
         vr-mode-ui="enabled: false;"
-        renderer="antialias: true; alpha: true; precision: medium;"
+        renderer="antialias: true; alpha: true; precision: low; logarithmicDepthBuffer: true;"
         embedded arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;">
 
         <a-assets>
