@@ -24,22 +24,19 @@
                 audio1: 'sound/saying.mp3',
                 audio2: 'sound/drawing_style.mp3',
                 audio3: 'sound/drawing_style.mp3',
-                audio4: 'sound/drawing_style.mp3',
-                audio5: 'sound/huang.mp3'
+                audio4: 'sound/drawing_style.mp3'
             },
             jp: {
                 audio1: 'sound/crane_jp.mp3',
                 audio2: 'sound/saying_jp.mp3',
                 audio3: 'sound/saying_jp.mp3',
-                audio4: 'sound/saying_jp.mp3',
-                audio5: 'sound/huang.mp3'
+                audio4: 'sound/saying_jp.mp3'
             },
             en: {
                 audio1: 'sound/crane_eng.mp3',
                 audio2: 'sound/saying_eng.mp3',
                 audio3: 'sound/saying_eng.mp3',
-                audio4: 'sound/saying_eng.mp3',
-                audio5: 'sound/huang.mp3'
+                audio4: 'sound/saying_eng.mp3'
             }
         };
 
@@ -75,19 +72,16 @@
             const audio2 = document.querySelector('#audio2');
             const audio3 = document.querySelector('#audio3');
             const audio4 = document.querySelector('#audio4');
-            const audio5 = document.querySelector('#audio5');
 
             audio1.src = audioFiles[lang].audio1;
             audio2.src = audioFiles[lang].audio2;
             audio3.src = audioFiles[lang].audio3;
             audio4.src = audioFiles[lang].audio4;
-            audio5.src = audioFiles[lang].audio5;
 
             audio1.load();
             audio2.load();
             audio3.load();
             audio4.load();
-            audio5.load();
 
             if(userInteractionGranted){
                 hintMessage.textContent = lang === 'zh' ? "請對準作品" : lang === 'jp' ? "\u30a2\u30a4\u30c6\u30e0\u3092\u914d\u7f6e\u3057\u3066\u304f\u3060\u3055\u3044" : "Please align the item";
@@ -357,7 +351,7 @@
             smooth="true"
             smoothCount="5"
             smoothTolerance="0.01"
-            smoothThreshold="20">
+            smoothThreshold="30">
         </a-nft>
 
         <a-nft
@@ -367,7 +361,7 @@
             smooth="true"
             smoothCount="5"
             smoothTolerance="0.01"
-            smoothThreshold="20">
+            smoothThreshold="30">
         </a-nft>
 
         <a-nft
@@ -377,7 +371,7 @@
             smooth="true"
             smoothCount="5"
             smoothTolerance="0.01"
-            smoothThreshold="20">
+            smoothThreshold="30">
         </a-nft>
 
         <a-nft
@@ -387,17 +381,7 @@
             smooth="true"
             smoothCount="5"
             smoothTolerance="0.01"
-            smoothThreshold="20">
-        </a-nft>
-
-        <a-nft
-            audiohandler="audioId: audio5"
-            type="nft"
-            url="data/huang_stand_sm"
-            smooth="true"
-            smoothCount="5"
-            smoothTolerance="0.01"
-            smoothThreshold="20">
+            smoothThreshold="30">
         </a-nft>
 
         <a-entity camera></a-entity>
